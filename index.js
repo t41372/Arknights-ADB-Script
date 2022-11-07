@@ -220,6 +220,6 @@ async function oneSession(deviceOption, duration, adbDeviceFlag)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
 }
 
-// main()
-console.log("等待秒數 (s)")
-sleepProgressBar(1000 * prompt(">> "))
+main()
+// console.log("等待秒數 (s)")
+// sleepProgressBar(1000 * prompt(">> "))
