@@ -13,6 +13,7 @@ const notes = `
  * 
 主號
  *  1-7: 78秒
+ *  南方監獄: 740 估
 
 --- Note End ---
 `;
@@ -160,7 +161,7 @@ async function main()
     let duration = prompt(">> ") * 1000; // now in ms
     console.log("請輸入連續戰鬥次數: ");
     let times = prompt(">> ");
-    console.log(`所以你想要連續戰鬥 ${times} 次, 每次 ${(duration/1000)}+4.5(冷卻) 秒, 共 ${times * (duration+4500+3000) / 1000} 秒`);
+    console.log(`所以你想要連續戰鬥 ${times} 次, 每次 ${(duration/1000)}+4.5(冷卻) 秒, 共 ${times * (duration+4500+3000) / 1000} 秒, 即 ${times * (duration+4500+3000) / 1000 / 60}分鐘`);
     prompt("按下 Enter 鍵開始\n");
 
     for(let index = 0; index < times; index++)
@@ -216,6 +217,19 @@ async function oneSession(deviceOption, duration, adbDeviceFlag)
     console.log("點擊 開始行動 收尾");
     await sleep(1000)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
+
+    // 600秒以上的應該都是剿滅作戰了, 剿滅作戰收尾要多一步驟
+    console.log("剿滅收尾: 等待4秒")
+    await sleep(4000)
+    console.log("點擊enter 1")
+    shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
+    await sleep(2000)
+    console.log("點擊enter 2")
+    shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
+    console.log("尾殺: 等待3秒")
+    await sleep(3000)
+    console.log("擊殺結束")
+
 }
 
 main()
