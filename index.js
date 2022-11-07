@@ -42,13 +42,9 @@ function sleep(ms) {
 // sleep for specific amount of time with progress bar
 async function sleepProgressBar(ms)
 {
-    // update per sec = 10s
-    // bar 刷新次數 = 40(partition)
-    // bar 刷新時間間隔 = ms/40(partition)
-    // bar 每秒刷新率 = 
-    // bar刷新率*時間刷新倍數 = 時間刷新率
 
     const partitionCount = 40; // the progress bar will update 20 times during ms
+    const desiredTimeUpdateSpan = 0.25/4; // 想要的 time 刷新間隔(s)
     
     // 實現了LTPO lol... 動態刷新率... 因為刷新率是跟著總時長走的, 就是那個 ms/partition,
     // 所以不管總時長多長, 這玩意兒只會刷新 partition 次, 也就是40 次, 如果跑了個1000s 的戰鬥, 前50s 這玩意兒都不會刷新...
@@ -58,12 +54,24 @@ async function sleepProgressBar(ms)
     // 如果設置的很大, 那10s 下的行為就會很奇怪, 因此要動態計算倍率
     // 總的來說, 如果一開始不把刷新率跟更新次數綁定, 而是設置每0.25秒刷新, 就沒這個問題了...
 
+    // 實現恆定0.25/4 秒刷新的推導:
+    // bar 刷新次數 = 40(partition)
+    // bar 刷新時間間隔 = ms/40(partition), 對於10s 的是10,000ms/40 = 250ms = 0.25s, 對於1000s 是 25000ms = 25s
+    // time 刷新倍率 = bar刷新之間更新的次數
+    // time 刷新時間間隔 = bar刷新時間間隔 * (1/time刷新倍率), 對於10s, 4x, time刷新間隔=0.25/(4)s
+    //                                                 對於1000s, 4x, time刷新間隔=25000ms/(4) = 6250ms = 6.25s
+    //
+    // 故, time刷新倍率 = ms / 40(partition) / time刷新時間間隔(我想要0.25/4)
+
     // time left updates 4x faster than the progress bar
     // 1x means timeLeft updates when progress bar updates
-    const timeLeftUpdateSpeed = (ms <= 10000)? 4 : // if total time is less than 10s, update progress bar when timeLeft updates 4 times
-        Math.round(4 * ((ms/10/1000)) ); // if total time is more than 10s, calculate it dynamically, but it has to be an integer
+    
+    //驗證
+    //刷新倍率                 =    取整    ( bar刷新時間間隔)   / (想要實現的 time刷新間隔s, 即timeLeft刷新之間的等待時長, s * 1000ms) 
+    const timeLeftUpdateSpeed = (Math.round( ms / partitionCount / (desiredTimeUpdateSpan * 1000)) >= 2)?
+                                (Math.round( ms / partitionCount / (desiredTimeUpdateSpan * 1000))) : 2;
 
-    console.log("Time left speed == " + timeLeftUpdateSpeed)
+    // console.log("Time left speed == " + timeLeftUpdateSpeed + `, Calucated is ${(Math.round( ms / partitionCount / (desiredTimeUpdateSpan * 1000)))}`)
     
     const bar_background = '_'
     const bar_head = '_'
