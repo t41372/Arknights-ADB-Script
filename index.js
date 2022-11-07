@@ -76,7 +76,8 @@ async function sleepProgressBar(ms)
     const bar_background = '_'
     const bar_head = '_'
     const bar_fill = '◼︎'
-    const bar_bound = '⎮'
+    const bar_leftBound = '['
+    const bar_rightBound = ']'
 
     // break down the total sleep time into partitionCount amount of pieces
     let waitPerUpdate = ms/(partitionCount * timeLeftUpdateSpeed); 
@@ -84,7 +85,7 @@ async function sleepProgressBar(ms)
     let progressUpdateCounter = 1; // only update progress bar when updateCounter == timeLeftSpeed, 
     
     // set up initial state of progress bar
-    let progressBar = bar_bound;
+    let progressBar = bar_leftBound;
     for(let index = 0; index < partitionCount; index ++)
     {
         progressBar = progressBar + bar_background
@@ -98,7 +99,7 @@ async function sleepProgressBar(ms)
         // ---- redraw progress line ----
         if(progressUpdateCounter == timeLeftUpdateSpeed)
         {
-            progressBar = bar_bound
+            progressBar = bar_leftBound
             filledCounter = 0;
             for(filledCounter = 0; filledCounter < (progress/timeLeftUpdateSpeed); filledCounter ++)
             {
@@ -123,7 +124,7 @@ async function sleepProgressBar(ms)
         await sleep(waitPerUpdate); // sleep
         timeLeft -= waitPerUpdate; // update time left
         
-        printOnExistingLine(`${progressBar}| 剩餘時間: ${(timeLeft/1000).toFixed(2)}s / ${ms/1000}s`)
+        printOnExistingLine(`${progressBar}${bar_rightBound} 剩餘時間: ${(timeLeft/1000).toFixed(2)}s / ${ms/1000}s`)
 
     }
 

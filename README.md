@@ -1,6 +1,10 @@
 # Arknights-ADB-Script
 基於Node.js 與 adb 的明日方舟自動刷圖腳本, 使用屏幕座標
 
+> :warning You do need to understand Chinese to use this script. English or other language is not an option. 
+
+> I don't think there are many non-Chinese-speaking Arknights players out there anyway...
+
 ## Dependency
 - node.js (開發於node v18.11.0版)
 - adb命令行工具
