@@ -5,14 +5,6 @@ const shell = require('shelljs');
 // coordinate of each point
 // each device needs: {screenCenter, enterFight, startAction}
 
-/** 小號 時長
- *  1-7: 73秒
- *  IW-8: 118秒
- * 
- *  主號
- *  1-7: 78
- * 
- */
 
 const notes = `
 --- Note ---
@@ -20,6 +12,7 @@ const notes = `
 小號 時長
  *  1-7: 73秒
  *  IW-8: 118秒
+ *  龍門市區: 14分45秒, 885秒
  * 
 主號
  *  1-7: 78秒
@@ -41,8 +34,77 @@ const huawei = {
     One_7: 78 //s
 }
 
+// sleep for specific amount of time, param in ms
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// sleep for specific amount of time with progress bar
+async function sleepProgressBar(ms)
+{
+    const partitionCount = 40; // the progress bar will update 20 times during ms
+    const timeLeftUpdateSpeed = 4; // time left updates 4x faster than the progress bar
+    // 1x means timeLeft updates when progress bar updates
+    const bar_background = '_'
+    const bar_head = '_'
+    const bar_fill = '◼︎'
+    const bar_bound = '⎮'
+
+    // break down the total sleep time into partitionCount amount of pieces
+    let waitPerUpdate = ms/(partitionCount * timeLeftUpdateSpeed); 
+    let timeLeft = ms;
+    let progressUpdateCounter = 1; // only update progress bar when updateCounter == timeLeftSpeed, 
+    
+    // set up initial state of progress bar
+    let progressBar = bar_bound;
+    for(let index = 0; index < partitionCount; index ++)
+    {
+        progressBar = progressBar + bar_background
+    }
+    printOnExistingLine(`${progressBar}| time left: ${(timeLeft/1000).toFixed(2)}s/ ${ms/1000}s`)
+    
+
+    for(let progress = 0; progress < partitionCount * timeLeftUpdateSpeed; progress ++)
+    {
+        
+        // ---- redraw progress line ----
+        if(progressUpdateCounter == timeLeftUpdateSpeed)
+        {
+            progressBar = bar_bound
+            filledCounter = 0;
+            for(filledCounter = 0; filledCounter < (progress/timeLeftUpdateSpeed); filledCounter ++)
+            {
+                progressBar = progressBar + bar_fill
+            }
+            for(let index = 0; index < (partitionCount - filledCounter); index ++)
+            {
+                if(index == 0)
+                    progressBar = progressBar + bar_head
+                else 
+                    progressBar = progressBar + bar_background
+            }
+            progressUpdateCounter = 0;
+            
+        }
+        else {
+            progressUpdateCounter ++
+        }
+        // ---- redraw progress line ends ----
+
+        
+        await sleep(waitPerUpdate); // sleep
+        timeLeft -= waitPerUpdate; // update time left
+        
+        printOnExistingLine(`${progressBar}| time left: ${(timeLeft/1000).toFixed(2)}s / ${ms/1000}s`)
+
+    }
+
+}
+
+function printOnExistingLine(text){
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(text);
 }
 
 
@@ -82,7 +144,7 @@ async function main()
         console.log(`還有約 ${(times-index)*(duration+4500+3000)/1000} 秒`);
         await oneSession(device, duration, adbDeviceFlag);
         console.log(`---- 第 ${index+1}/${times} 次戰鬥結束 ----`);
-        await sleep(3000);
+        await sleep(1000);
     }
 
     console.log("\n\n------->>>> Mission Complete <<<<-------")
@@ -111,12 +173,25 @@ async function oneSession(deviceOption, duration, adbDeviceFlag)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.startAction[0] + " " + device.startAction[1]);
 
     //等待 (關卡時長) + 3秒緩衝 掉落物
-    console.log(`wait ${duration}ms + 3000ms = ${(duration+3000)/1000}s`)
-    await sleep(duration + 3000)
+    console.log(`\n戰鬥: ${duration}ms + 3000ms = ${(duration+3000)/1000}s`)
+    console.log("戰鬥中...")
+    await sleepProgressBar(duration + 3000)
 
+    console.log("收尾")
     //點擊屏幕中央
     console.log("點擊中央")
     shell.exec(`adb${adbDeviceFlag} shell input tap ${device.screenCenter[0]} ${device.screenCenter[1]}`)
+    
+    //點擊開始行動 收尾
+    console.log("點擊 開始行動 收尾");
+    await sleep(1000)
+    shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
+    //點擊開始行動 收尾
+    console.log("點擊 開始行動 收尾");
+    await sleep(1000)
+    shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
 }
 
 main()
+// console.log("等待秒數 (s)")
+// sleepProgressBar(1000 * prompt(">> "))
