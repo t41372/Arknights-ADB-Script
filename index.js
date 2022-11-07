@@ -42,9 +42,29 @@ function sleep(ms) {
 // sleep for specific amount of time with progress bar
 async function sleepProgressBar(ms)
 {
+    // update per sec = 10s
+    // bar 刷新次數 = 40(partition)
+    // bar 刷新時間間隔 = ms/40(partition)
+    // bar 每秒刷新率 = 
+    // bar刷新率*時間刷新倍數 = 時間刷新率
+
     const partitionCount = 40; // the progress bar will update 20 times during ms
-    const timeLeftUpdateSpeed = 4; // time left updates 4x faster than the progress bar
+    
+    // 實現了LTPO lol... 動態刷新率... 因為刷新率是跟著總時長走的, 就是那個 ms/partition,
+    // 所以不管總時長多長, 這玩意兒只會刷新 partition 次, 也就是40 次, 如果跑了個1000s 的戰鬥, 前50s 這玩意兒都不會刷新...
+    // 故 新增了一個剩餘時間, 進度條可以不動, 但計時器要走, 讓用戶安心
+    // 但計時器原本是跟刷新一起走的, 所以前50 秒他還是不會刷新, 因此設置了 timeLeftUpdateSpeed, 讓秒數刷新比進度條刷新要快
+    // 原本設的是4x, 即 時間刷新4次, 進度條刷新1次, 但這個刷新倍數不能永遠都是4x, 這個速度對10s 很合適, 但對於1000s 戰鬥就很慢
+    // 如果設置的很大, 那10s 下的行為就會很奇怪, 因此要動態計算倍率
+    // 總的來說, 如果一開始不把刷新率跟更新次數綁定, 而是設置每0.25秒刷新, 就沒這個問題了...
+
+    // time left updates 4x faster than the progress bar
     // 1x means timeLeft updates when progress bar updates
+    const timeLeftUpdateSpeed = (ms <= 10000)? 4 : // if total time is less than 10s, update progress bar when timeLeft updates 4 times
+        Math.round(4 * ((ms/10/1000)) ); // if total time is more than 10s, calculate it dynamically, but it has to be an integer
+
+    console.log("Time left speed == " + timeLeftUpdateSpeed)
+    
     const bar_background = '_'
     const bar_head = '_'
     const bar_fill = '◼︎'
@@ -95,7 +115,7 @@ async function sleepProgressBar(ms)
         await sleep(waitPerUpdate); // sleep
         timeLeft -= waitPerUpdate; // update time left
         
-        printOnExistingLine(`${progressBar}| time left: ${(timeLeft/1000).toFixed(2)}s / ${ms/1000}s`)
+        printOnExistingLine(`${progressBar}| 剩餘時間: ${(timeLeft/1000).toFixed(2)}s / ${ms/1000}s`)
 
     }
 
@@ -120,7 +140,7 @@ async function main()
     console.log("是否有多個設備連接？這次要用哪個設備呢? 預設單設備")
     shell.exec("adb devices")
     let adbDeviceFlag = prompt(">> ")
-    if(adbDeviceFlag.trim() == "" && adbDeviceFlag.trim == "\n")
+    if(adbDeviceFlag.trim().length == 0 || adbDeviceFlag.trim == "\n")
     {
         console.log("無多設備? 那就不加上 -s flag 了")
         adbDeviceFlag = "";
@@ -192,6 +212,6 @@ async function oneSession(deviceOption, duration, adbDeviceFlag)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
 }
 
-main()
-// console.log("等待秒數 (s)")
-// sleepProgressBar(1000 * prompt(">> "))
+// main()
+console.log("等待秒數 (s)")
+sleepProgressBar(1000 * prompt(">> "))
