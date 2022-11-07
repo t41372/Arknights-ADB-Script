@@ -1,11 +1,8 @@
 const prompt = require('prompt-sync')();
 const shell = require('shelljs');
 
-// constant area:
 // coordinate of each point
 // each device needs: {screenCenter, enterFight, startAction}
-
-
 const notes = `
 --- Note ---
 
