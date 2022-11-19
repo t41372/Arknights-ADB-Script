@@ -32,6 +32,13 @@ const huawei = {
     One_7: 78 //s
 }
 
+const emu_pixel2 = {
+    screenCenter: [909, 537],
+    enterFight: [1710, 993],
+    startAction: [1650, 773],
+    One_7: 72 //s
+}
+
 // sleep for specific amount of time, param in ms
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -141,7 +148,7 @@ async function main()
     console.log(notes)
 
     console.log("歡迎使用自動戰鬥腳本");
-    console.log("本次連結的設備是? (1)小米11 Ultra[e6] (2)華為[9JB] (3) 小米12S Ultra");
+    console.log("本次連結的設備是? (1)小米11 Ultra[e6] (2)華為[9JB] (3) 小米12S Ultra (4)模擬器Pixel2");
     let device = prompt(">> ");
 
     console.log("是否有多個設備連接？這次要用哪個設備呢? 預設單設備")
@@ -171,7 +178,7 @@ async function main()
     {   
         console.log(`\n---->> 第 ${index+1}/${times} 次戰鬥開始 <<----`)      
                                                     //(剩餘次數) * (單次時長ms) / 1000ms
-        console.log(`還有約 ${(times-index)*(duration+4500+3000)/1000} 秒`);
+        console.log(`還有約 ${(times-index)*(duration+4500+3000)/1000} 秒, 即${(times-index)*(duration+4500+3000)/1000 /60}分鐘`);
         await oneSession(device, duration, adbDeviceFlag);
         console.log(`---- 第 ${index+1}/${times} 次戰鬥結束 ----`);
         await sleep(1000);
@@ -187,7 +194,8 @@ async function oneSession(deviceOption, duration, adbDeviceFlag)
 {
     let device = mi11u;
     if(deviceOption == 1) device = mi11u;
-    else if(deviceOption == 2) device = huawei;
+    else if(deviceOption == 2) device = huawei; //mi12s u 沒有測試過
+    else if(deviceOption == 4) device = emu_pixel2;
     else console.log("未知設備, 設置為 mi11 u")
 
     //進入戰鬥 -> 開始行動 -> 等待 (關卡時長) => 再等3秒 (掉落物冒出來, 保險)=> 點擊進入戰鬥 (1s) => loop
