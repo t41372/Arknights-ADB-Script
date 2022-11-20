@@ -1,9 +1,11 @@
 # Arknights-ADB-Script
 基於Node.js 與 adb 的明日方舟自動刷圖腳本, 使用屏幕座標
 
+> If you're curious, this is a simple automatic fighting script for Arknight based on Node.js and adb (android debug bridge)<br/>
+
 > :warning: You **need** to understand Chinese to use this script. English or other language is not an option. <br/>
 > I don't think there are many non-Chinese-speaking Arknights players out there anyway... <br/>
-> Well, if there are any sensible human being actually need it, I can do it...
+> Well, if there are any *actual* non-Chinese Arknight players out there, I can do it...
 
 ## Dependency
 - node.js (開發於node v18.11.0版)
@@ -36,4 +38,4 @@
 
 如果要把repository 轉為 public 所需要做的微小工作:
 - [x] 刪除寫死的設備數據
-- [x] 提供persistent storage 來儲存各個設備的按鈕座標信息, 比如創建json 或是使用數據庫
+- [x] 提供persistent storage 來儲存各個設備的按鈕座標信息, 比如創建config.json 或是使用數據庫
