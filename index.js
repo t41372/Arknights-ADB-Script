@@ -5,43 +5,6 @@ const fs = require('fs')
 
 
 
-
-// coordinate of each point
-// each device needs: {screenCenter, enterFight, startAction}
-//!del
-const notes = `
---- Note ---
-
-小號 時長
- *  1-7: 73秒
- *  IW-8: 118秒
- *  龍門市區: 14分45秒, 885秒
- * 
-主號
- *  1-7: 78秒
- *  南方監獄: 740 估
-
---- Note End ---
-`;
- //! Del
-const mi11u = {
-    screenCenter: [1670, 774],
-    enterFight: [2809, 1311],
-    startAction: [2537, 1028],
-}
-//! del
-const huawei = {
-    screenCenter: [1140, 565],
-    enterFight: [2064, 988],
-    startAction: [1857, 755],
-}
-//! del
-const emu_pixel2 = {
-    screenCenter: [909, 537],
-    enterFight: [1710, 993],
-    startAction: [1650, 773],
-}
-
 // sleep for specific amount of time, param in ms
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -155,16 +118,23 @@ async function main()
         configFile = Hjson.parse(fs.readFileSync('config.hjson', 'utf8'));
     } catch(err)
     {
-        console.log("當前目錄下找不到config.hjson, 去創建一個吧, 把template_config.hjson的template_刪掉, 然後添加你的設備信息吧\n報錯信息如下:")
+        console.log("當前目錄下找不到config.hjson, 去創建一個吧, 把template_config.hjson名字改成config.hjson, 然後添加你的設備信息吧\n報錯信息如下:")
         console.log(err)
         return;
     }
     
-    console.log(notes)
+    console.log(configFile.Note)
 
     console.log("歡迎使用自動戰鬥腳本");
-    console.log("本次連結的設備是? (1)小米11 Ultra[e6] (2)華為[9JB] (3) 小米12S Ultra (4)模擬器Pixel2");
-    let device = prompt(">> ");
+    console.log("本次連結的設備是?");
+    for(let index = 0; index < configFile.Devices.length; index ++)
+    {
+        console.log(` (${index}) ${configFile.Devices[index].name}`)
+    }
+
+    let device = prompt(">> "); // this is actually device number yet
+    device = configFile.Devices[device]; // and now it represent the device configuration json...
+    console.log(`你選擇了${device.name}?好的`)
 
     console.log("是否有多個設備連接？這次要用哪個設備呢? 預設單設備")
     shell.exec("adb devices")
@@ -205,13 +175,21 @@ async function main()
 
 // A fight
 // total time = duration + 4500ms + 3000ms, 4500ms 是按鍵冷卻總時長, 3000是迴圈末尾冷卻
-async function oneSession(deviceOption, duration, adbDeviceFlag)
+// param 1: device config, json
+// param 2: duration of the fight in ms
+// param 3: adbDeviceFlag, string, put empty string if you don't know what it is
+async function oneSession(device, duration, adbDeviceFlag)
 {
-    let device = mi11u;
-    if(deviceOption == 1) device = mi11u;
-    else if(deviceOption == 2) device = huawei; //mi12s u 沒有測試過
-    else if(deviceOption == 4) device = emu_pixel2;
-    else console.log("未知設備, 設置為 mi11 u")
+    // device 格式:
+    // Note: xy皆為數字(座標)
+    /**
+    {
+        name: '手機名',
+        screenCenter: [ x, y ],
+        enterFight: [ x, y ],
+        startAction: [ x, y ]
+    }
+    */
 
     //進入戰鬥 -> 開始行動 -> 等待 (關卡時長) => 再等3秒 (掉落物冒出來, 保險)=> 點擊進入戰鬥 (1s) => loop
 
