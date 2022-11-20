@@ -3,7 +3,7 @@
 
 > If you're curious, this is a simple automatic fighting script for Arknight based on Node.js and adb (android debug bridge)<br/>
 
-> :warning: You **need** to understand Chinese to use this script. English or other language is not an option. <br/>
+> :warning: You **need** to understand Chinese to use this script. English or any other language is not an option. <br/>
 > I don't think there are many non-Chinese-speaking Arknights players out there anyway... <br/>
 > Well, if there are any *actual* non-Chinese Arknight players out there, I can do it...
 
