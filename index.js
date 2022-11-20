@@ -1,8 +1,14 @@
 const prompt = require('prompt-sync')();
 const shell = require('shelljs');
+const Hjson = require('hjson');
+const fs = require('fs')
+
+
+
 
 // coordinate of each point
 // each device needs: {screenCenter, enterFight, startAction}
+//!del
 const notes = `
 --- Note ---
 
@@ -17,26 +23,23 @@ const notes = `
 
 --- Note End ---
 `;
-
+ //! Del
 const mi11u = {
     screenCenter: [1670, 774],
     enterFight: [2809, 1311],
     startAction: [2537, 1028],
-    One_7: 72 //s
 }
-
+//! del
 const huawei = {
     screenCenter: [1140, 565],
     enterFight: [2064, 988],
     startAction: [1857, 755],
-    One_7: 78 //s
 }
-
+//! del
 const emu_pixel2 = {
     screenCenter: [909, 537],
     enterFight: [1710, 993],
     startAction: [1650, 773],
-    One_7: 72 //s
 }
 
 // sleep for specific amount of time, param in ms
@@ -51,6 +54,8 @@ async function sleepProgressBar(ms)
     const partitionCount = 40; // the progress bar will update 20 times during ms
     const desiredTimeUpdateSpan = 0.25/4; // 想要的 time 刷新間隔(s)
     
+    // 下面是一個關於某個傻逼選了個錯誤的方法實現了進度條動畫, 發現問題後繞了個大遠路解決了本來很簡單的問題的故事...
+
     // 實現了LTPO lol... 動態刷新率... 因為刷新率是跟著總時長走的, 就是那個 ms/partition,
     // 所以不管總時長多長, 這玩意兒只會刷新 partition 次, 也就是40 次, 如果跑了個1000s 的戰鬥, 前50s 這玩意兒都不會刷新...
     // 故 新增了一個剩餘時間, 進度條可以不動, 但計時器要走, 讓用戶安心
@@ -145,6 +150,16 @@ function printOnExistingLine(text){
 
 async function main()
 {
+    var configFile;
+    try{
+        configFile = Hjson.parse(fs.readFileSync('config.hjson', 'utf8'));
+    } catch(err)
+    {
+        console.log("當前目錄下找不到config.hjson, 去創建一個吧, 把template_config.hjson的template_刪掉, 然後添加你的設備信息吧\n報錯信息如下:")
+        console.log(err)
+        return;
+    }
+    
     console.log(notes)
 
     console.log("歡迎使用自動戰鬥腳本");
