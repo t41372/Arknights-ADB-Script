@@ -7,6 +7,8 @@
 > I don't think there are many non-Chinese-speaking Arknights players out there anyway... <br/>
 > Well, if there are any *actual* non-Chinese Arknight players out there, I can do it...
 
+<img width="500vw" alt="截圖 2022-11-20 上午10 42 06" src="https://user-images.githubusercontent.com/36402030/202917462-d3050e01-5a14-4de6-a1eb-f9e1700d912b.png">
+
 ## Dependency
 - node.js (開發於node v18.11.0版)
 - adb命令行工具
