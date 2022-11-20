@@ -199,9 +199,10 @@ async function oneSession(device, duration, adbDeviceFlag)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
     
     console.log("wait 1500 ms")
-    await sleep(1500);
+    await sleep(1500 + device.laggyPhoneCompensation);
     console.log("點擊 開始行動");
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.startAction[0] + " " + device.startAction[1]);
+    await sleep(device.laggyPhoneCompensation)
 
     //等待 (關卡時長) + 3秒緩衝 掉落物
     console.log(`\n戰鬥: ${duration}ms + 3000ms = ${(duration+3000)/1000}s`)
@@ -215,11 +216,11 @@ async function oneSession(device, duration, adbDeviceFlag)
     
     //點擊開始行動 收尾
     console.log("點擊 開始行動 收尾");
-    await sleep(1000)
+    await sleep(1000 + device.laggyPhoneCompensation)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
     //點擊開始行動 收尾
     console.log("點擊 開始行動 收尾");
-    await sleep(1000)
+    await sleep(1000 + device.laggyPhoneCompensation)
     shell.exec("adb" + adbDeviceFlag + " shell input tap " + device.enterFight[0] + " " + device.enterFight[1]);
 
     // 600秒以上的應該都是剿滅作戰了, 剿滅作戰收尾要多一步驟
