@@ -1,5 +1,5 @@
 # Arknights-ADB-Script
-基於Node.js 與 adb 的明日方舟自動刷圖腳本, 使用屏幕座標
+基於Node.js 與 adb 的明日方舟自動刷圖腳本, 使用屏幕座標, 透過adb向設備模擬點擊
 
 > If you're curious, this is a simple automatic fighting script for Arknight based on Node.js and adb (android debug bridge)<br/>
 
